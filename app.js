@@ -5,6 +5,7 @@ const state = {
   query: "",
   filter: "all",
   month: "",
+  visibleCount: 50,   // pagination
 };
 
 const els = {
@@ -145,12 +146,14 @@ function applyFilters() {
     const matchesMonth = !state.month || monthKey(m) === state.month;
     return matchesQuery && matchesFilter && matchesMonth;
   });
+  state.visibleCount = 50;   // reset pagination on filter change
   render();
 }
 function render() {
+  const chunk = state.filtered.slice(0, state.visibleCount);
   let html = "";
   let lastDate = "";
-  for (const msg of state.filtered) {
+  for (const msg of chunk) {
     const dk = dateKey(msg);
     if (dk !== lastDate) {
       html += dividerHtml(msg);
@@ -162,6 +165,25 @@ function render() {
   els.results.textContent = `${state.filtered.length} entr${state.filtered.length === 1 ? "y" : "ies"}`;
   els.noResults.style.display = state.filtered.length ? "none" : "block";
   els.status.textContent = state.data ? `${state.data.name || "Archive"} · ${state.data.mediaMode || "media"} media` : "";
+
+  // "Load more" button
+  let loadBtn = document.getElementById("load-more-btn");
+  if (state.filtered.length > state.visibleCount) {
+    if (!loadBtn) {
+      loadBtn = document.createElement("button");
+      loadBtn.id = "load-more-btn";
+      loadBtn.className = "load-more-btn";
+      loadBtn.textContent = "Load more entries";
+      loadBtn.addEventListener("click", () => {
+        state.visibleCount += 50;
+        render();
+      });
+    }
+    els.timeline.appendChild(loadBtn);
+  } else if (loadBtn) {
+    loadBtn.remove();
+  }
+
   setupAudioPlayers();
 }
 async function init() {
@@ -178,8 +200,8 @@ async function init() {
   }
 }
 function setupAudioPlayers() {
-  document.querySelectorAll("[data-audio-shell]").forEach(shell => {
-    if (shell.dataset.ready) return;
+  // Only process audio shells that haven't been initialized yet
+  document.querySelectorAll("#timeline [data-audio-shell]:not([data-ready])").forEach(shell => {
     shell.dataset.ready = "1";
 
     const audio = shell.querySelector("audio");
@@ -256,18 +278,23 @@ function setupAudioPlayers() {
   });
 }
 
+// Debounced search
+let searchDebounce;
 els.search.addEventListener("input", () => {
   state.query = els.search.value;
   els.clear.classList.toggle("visible", !!state.query);
-  applyFilters();
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(applyFilters, 300);
 });
 els.clear.addEventListener("click", () => {
   els.search.value = "";
   state.query = "";
   els.clear.classList.remove("visible");
-  applyFilters();
+  clearTimeout(searchDebounce);
+  applyFilters();   // immediately apply clear
   els.search.focus();
 });
+
 document.querySelectorAll(".filter-chip").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filter-chip").forEach(b => b.classList.remove("active"));
@@ -280,6 +307,7 @@ els.month.addEventListener("change", () => {
   state.month = els.month.value;
   applyFilters();
 });
+
 document.addEventListener("click", async (e) => {
   const more = e.target.closest(".more-btn");
   if (more) {
@@ -323,6 +351,7 @@ document.addEventListener("click", async (e) => {
     document.querySelectorAll(".more-btn").forEach(b => b.setAttribute("aria-expanded", "false"));
   }
 });
+
 document.addEventListener("keydown", e => {
   if (e.key === "/" && document.activeElement !== els.search) {
     e.preventDefault();
@@ -335,10 +364,12 @@ document.addEventListener("keydown", e => {
       els.search.value = "";
       state.query = "";
       els.clear.classList.remove("visible");
+      clearTimeout(searchDebounce);
       applyFilters();
     }
   }
 });
+
 els.theme.addEventListener("click", () => {
   const html = document.documentElement;
   const next = html.dataset.theme === "dark" ? "light" : "dark";
@@ -346,6 +377,7 @@ els.theme.addEventListener("click", () => {
   localStorage.setItem("archive-theme", next);
   els.theme.textContent = next === "dark" ? "☾" : "○";
 });
+
 document.getElementById("btn-top").addEventListener("click", () => window.scrollTo({top:0, behavior:"smooth"}));
 document.getElementById("btn-bottom").addEventListener("click", () => window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"}));
 
