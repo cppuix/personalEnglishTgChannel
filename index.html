@@ -1,73 +1,143 @@
-<!doctype html>
-<html lang="en" dir="ltr" data-theme="dark">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Al-Qaddaary's English Telegram Channel Archive" />
-  <title>Al-Qaddaary's Telegram Archive</title>
-  <link rel="icon" href="assets/logo.jpg" />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Al-Qaddaary — Telegram Archive</title>
+<meta name="description" content="The English Telegram archive of Al-Qaddaary — essays, translations and notes.">
+<meta name="theme-color" content="#131316">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23131316'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%2352C7B2' text-anchor='middle'%3E%C2%A7%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="bg-aurora" aria-hidden="true"></div>
-  <div class="bg-grain" aria-hidden="true"></div>
-  <div class="bg-vignette" aria-hidden="true"></div>
-  <div class="bg-twinkles" id="twinkles" aria-hidden="true"></div>
 
-  <button id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">☾</button>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
-  <div class="float-nav" aria-label="Page navigation">
-    <button class="fn-btn" id="btn-top" title="Back to top">↑</button>
-    <div class="fn-progress" id="scroll-pct">0%</div>
-    <button class="fn-btn" id="btn-bottom" title="Jump to bottom">↓</button>
-  </div>
+<div class="frame">
 
-  <main id="app">
-    <header class="site-header" id="top">
-      <div class="logo-wrap">
-        <img src="assets/logo.jpg" alt="Al-Qaddaary logo" onerror="this.outerHTML='<div class=&quot;logo-fallback&quot;>ق</div>'" />
-      </div>
-      <h1 class="site-title">Al-Qaddaary's English<br>Telegram Channel Archive</h1>
-      <p class="site-subtitle">Author · Translator · Developer</p>
-      <div class="header-ornament"></div>
+  <!-- ── Left rail: contents (desktop) ── -->
+  <aside class="rail" id="rail">
+    <div class="rail-top">
+      <p class="rail-heading">Contents</p>
+      <nav class="toc" id="toc" aria-label="Months"></nav>
+    </div>
+    <div class="rail-bottom">
+      <span class="rail-pct" id="rail-pct">0%</span>
+      <span class="rail-hint">J / K to move</span>
+    </div>
+  </aside>
+
+  <!-- ── Page ── -->
+  <div class="page">
+
+    <header class="masthead" id="top">
+      <p class="mast-eyebrow">The English Telegram Archive</p>
+      <h1 class="mast-title">Al-Qaddaary</h1>
+      <div class="mast-rule" aria-hidden="true"></div>
+      <p class="mast-sub">Essays · translations · notes — author, translator, developer</p>
     </header>
 
-    <section class="controls" aria-label="Archive controls">
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input id="search-input" type="search" placeholder="Search the archive…" autocomplete="off" spellcheck="false" />
-        <button class="clear-btn" id="clear-btn" title="Clear search" aria-label="Clear search">✕</button>
+    <div class="cmdbar" id="cmdbar">
+      <div class="cmd-row">
+        <button class="contents-btn" id="contents-btn" type="button" aria-label="Open contents">
+          <svg width="13" height="11" viewBox="0 0 13 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1 1h11M1 5.5h11M1 10h11"/></svg>
+          Contents
+        </button>
+        <span class="chapter-now" id="chapter-now" aria-hidden="true"></span>
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+          <input id="search-input" type="search" placeholder="Search the archive…  ( / )" autocomplete="off" spellcheck="false" aria-label="Search entries">
+          <button id="clear-btn" class="clear-btn" type="button" aria-label="Clear search">✕</button>
+        </div>
+        <div class="viewswitch" role="tablist" aria-label="View">
+          <button class="vs-btn active" data-view="read" role="tab" aria-selected="true" type="button">Read</button>
+          <button class="vs-btn" data-view="gallery" role="tab" aria-selected="false" type="button">Gallery</button>
+          <button class="vs-btn" data-view="index" role="tab" aria-selected="false" type="button">Index</button>
+        </div>
       </div>
-
-      <div class="filter-row">
-        <span class="filter-label">View</span>
-        <button class="filter-chip active" data-filter="all">All</button>
-        <button class="filter-chip" data-filter="text">Text</button>
-        <button class="filter-chip" data-filter="image">Images</button>
-        <button class="filter-chip" data-filter="audio">Audio</button>
-        <button class="filter-chip" data-filter="video">Video</button>
-        <button class="filter-chip" data-filter="file">Files</button>
-        <button class="filter-chip" data-filter="forwarded">Forwarded</button>
+      <div class="cmd-row2">
+        <div class="chips" id="chips" role="toolbar" aria-label="Filter by type"></div>
+        <span class="results-count" id="results-count" aria-live="polite">—</span>
+        <select id="month-filter" aria-label="Filter by month"><option value="">All dates</option></select>
       </div>
+    </div>
 
-      <div class="date-row">
-        <span class="filter-label">Date</span>
-        <select id="month-filter">
-          <option value="">All dates</option>
-        </select>
-        <span class="results-count" id="results-count">— entries</span>
-      </div>
-    </section>
+    <main>
+      <p class="status-line" id="status" aria-live="polite">Opening archive…</p>
 
-    <section id="status" class="status-line">Opening archive…</section>
-    <section id="timeline" aria-live="polite"></section>
-    <div id="no-results">No entries found.</div>
+      <section id="view-read" class="view">
+        <div id="timeline"></div>
+        <div id="no-results" hidden>
+          <p class="nr-mark" aria-hidden="true">⁂</p>
+          <p class="nr-text">Nothing here under those filters.</p>
+          <button id="reset-filters" class="btn-quiet" type="button">Show everything</button>
+        </div>
+        <div id="sentinel">
+          <span class="sentinel-label" id="sentinel-label"></span>
+          <button id="load-more" class="btn-quiet" type="button" hidden>Load more entries</button>
+        </div>
+      </section>
 
-    <footer class="site-footer">
-      Al-Qaddaary's English Telegram Channel Archive
+      <section id="view-gallery" class="view" hidden>
+        <div id="gallery" class="gallery"></div>
+      </section>
+
+      <section id="view-index" class="view" hidden>
+        <div class="index-wrap">
+          <table class="index-table">
+            <thead><tr><th>Date</th><th>№</th><th>Entry</th><th>Contains</th></tr></thead>
+            <tbody id="index-body"></tbody>
+          </table>
+          <p class="index-note" id="index-note" hidden></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <p id="colophon-stats">—</p>
+      <p class="kbd-hints"><kbd>/</kbd> search · <kbd>esc</kbd> clear · <kbd>J</kbd><kbd>K</kbd> entries · <kbd>←</kbd><kbd>→</kbd> images</p>
+      <p>Set in Instrument Serif, Newsreader &amp; Amiri</p>
     </footer>
-  </main>
 
-  <script src="app.js"></script>
+  </div>
+</div>
+
+<!-- ── Mobile contents drawer ── -->
+<div class="drawer-backdrop" id="drawer-backdrop"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Contents" aria-hidden="true">
+  <div class="drawer-grab" aria-hidden="true"></div>
+  <div class="drawer-head">
+    <p class="drawer-title">Contents</p>
+    <div class="drawer-actions">
+      <button id="drawer-top" class="da-btn" type="button">↑ Top</button>
+      <button id="drawer-end" class="da-btn" type="button">↓ Latest</button>
+    </div>
+    <button class="drawer-close" id="drawer-close" type="button" aria-label="Close contents">✕</button>
+  </div>
+  <nav class="toc drawer-toc" id="toc-m" aria-label="Months"></nav>
+</aside>
+
+<button class="float-btn float-theme" id="theme-toggle" type="button" aria-label="Toggle colour theme">☀</button>
+<button class="float-btn float-top" id="btn-top" type="button" aria-label="Back to top">↑</button>
+
+<button class="reading-chip" id="reading-chip" type="button" hidden aria-label="Currently reading — back to top">
+  <span id="reading-chip-text"></span>
+</button>
+
+<div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lb-btn lb-close" type="button" aria-label="Close">✕</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image">←</button>
+  <figure class="lb-figure">
+    <img id="lb-img" alt="">
+    <figcaption class="lb-caption"><span id="lb-caption-text"></span><span class="lb-count" id="lb-count"></span></figcaption>
+  </figure>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image">→</button>
+</div>
+
+<noscript><p class="status-line">This archive requires JavaScript.</p></noscript>
+<script src="app.js"></script>
 </body>
 </html>
